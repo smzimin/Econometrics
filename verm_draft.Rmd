@@ -1,0 +1,38 @@
+---
+title: "vermodi_draft"
+author: "Степан Зимин, 302"
+date: "Thursday, May 21, 2015"
+output: html_document
+---
+$\textbf{№1. Проверка гипотезы об однородности. Критерий Вилкоксона.}$
+$\textbf{№2. Проверка гипотезы о независимости двух номинальных признаков. Критерий хи-квадрат.}$
+$\textbf{Измерение связи признаков. Коэффициенты Пирсона и Крамера.}$
+
+$\textbf{№3. Проверка гипотезы о независимости двух количественных признаков.}$
+$\textbf{Критерии Спирмена и Кендалла.}$
+
+Сначала посмотрим на данные:
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+library(MASS)
+library(plyr)
+library(gmodels)
+titanic_data <- read.csv("titanic3.csv")
+d_w <- na.omit(data.frame(age = titanic_data$age,
+                          fare = titanic_data$fare,
+                          survived=factor(titanic_data$survived, levels=c(0,1), labels=c("not","survived")),
+                          sibs=factor(titanic_data$sibs==0, levels=c(TRUE,FALSE), labels=c("alone","with siblings")),
+                          class=factor(titanic_data$pclass)))
+cd_w <- ddply(d_w, "survived", summarise, fare.mean=mean(fare))
+cd_w_age <- ddply(d_w, "survived", summarise, age.mean=mean(age))
+```
+
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+ggplot(d_w, aes(x=fare, colour=survived)) + geom_density() +
+  geom_vline(data=cd_w, aes(xintercept=fare.mean,  colour=survived), linetype="dashed", size=1) +
+  ggtitle("Плотность распределения стоимости билета") + theme(plot.title = element_text(hjust = 0)) +
+  xlab("Стоимость, доллары")+ xlim(0,200)
+```
+
